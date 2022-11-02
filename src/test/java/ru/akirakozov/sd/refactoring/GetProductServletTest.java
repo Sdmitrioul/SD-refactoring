@@ -31,15 +31,4 @@ public class GetProductServletTest extends TestBase {
         
         assertEquals(htmlResult(products), writer.toString());
     }
-    
-    private static List<Pair<String, Integer>> getProducts() {
-        final List<Pair<String, Integer>> products = new ArrayList<>(4);
-        
-        products.add(Pair.of("iphone", 100));
-        products.add(Pair.of("mac", 1000));
-        products.add(Pair.of("airpods", 10));
-        products.add(Pair.of("watch", 50));
-        
-        return products;
-    }
 }

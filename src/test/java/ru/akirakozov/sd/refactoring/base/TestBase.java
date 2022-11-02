@@ -16,8 +16,11 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
+import java.util.function.Consumer;
 
 import static org.mockito.Mockito.when;
 import static ru.akirakozov.sd.refactoring.Main.DB_URL;
@@ -60,15 +63,25 @@ public abstract class TestBase {
         execute("DELETE FROM PRODUCT");
     }
     
-    protected String htmlResult(Collection<Pair<String, Integer>> items) {
+    protected static String htmlResult(String value) {
+        return htmlResult(result -> result.append(value));
+    }
+    
+    protected static String htmlResult(Collection<Pair<String, Integer>> items) {
+        return htmlResult(result -> {
+            items.forEach(item -> result.append(item.getFirst())
+                    .append("\t")
+                    .append(item.getSecond())
+                    .append("</br>\n"));
+        });
+    }
+    
+    private static String htmlResult(Consumer<StringBuilder> consumer) {
         final StringBuilder result = new StringBuilder();
         
         result.append("<html><body>\n");
         
-        items.forEach(item -> result.append(item.getFirst())
-                .append("\t")
-                .append(item.getSecond())
-                .append("</br>\n"));
+        consumer.accept(result);
         
         result.append("</body></html>\n");
         return result.toString();
@@ -91,5 +104,16 @@ public abstract class TestBase {
         sql.deleteCharAt(sql.length() - 2);
         
         execute(sql.toString());
+    }
+    
+    protected static List<Pair<String, Integer>> getProducts() {
+        final List<Pair<String, Integer>> products = new ArrayList<>(4);
+        
+        products.add(Pair.of("iphone", 100));
+        products.add(Pair.of("mac", 1000));
+        products.add(Pair.of("airpods", 10));
+        products.add(Pair.of("watch", 50));
+        
+        return products;
     }
 }
