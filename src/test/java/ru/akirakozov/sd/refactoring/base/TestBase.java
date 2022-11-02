@@ -2,12 +2,11 @@ package ru.akirakozov.sd.refactoring.base;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Rule;
 import org.mockito.Mock;
-import org.mockito.junit.MockitoJUnit;
-import org.mockito.junit.MockitoRule;
+import org.mockito.MockitoAnnotations;
 import ru.akirakozov.sd.refactoring.util.Pair;
 
+import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -18,6 +17,7 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collection;
+import java.util.Collections;
 
 import static org.mockito.Mockito.when;
 import static ru.akirakozov.sd.refactoring.Main.DB_URL;
@@ -28,33 +28,39 @@ public abstract class TestBase {
             " NAME           TEXT    NOT NULL, " +
             " PRICE          INT     NOT NULL)";
     protected final StringWriter writer = new StringWriter();
-    @Rule
-    public MockitoRule rule = MockitoJUnit.rule();
+    
+    protected final HttpServlet servlet;
     @Mock
     protected HttpServletRequest request;
     @Mock
     protected HttpServletResponse response;
     
+    public TestBase(final HttpServlet servlet) {
+        this.servlet = servlet;
+    }
+    
     @Before
     public void before() throws SQLException, IOException {
         execute(PRODUCT_TABLE);
+        execute("DELETE FROM PRODUCT");
+        MockitoAnnotations.openMocks(this);
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
     }
     
-    protected void execute(String sql) throws SQLException {
+    protected int execute(String sql) throws SQLException {
         try (Connection connection = DriverManager.getConnection(DB_URL)) {
             try (Statement statement = connection.createStatement()) {
-                statement.execute(sql);
+                return statement.executeUpdate(sql);
             }
         }
     }
     
     @After
     public void after() throws SQLException {
-        execute("DELETE FROM PRODUCT WHERE True");
+        execute("DELETE FROM PRODUCT");
     }
     
-    protected String htmlResult(Collection<Pair<String, String>> items) {
+    protected String htmlResult(Collection<Pair<String, Integer>> items) {
         final StringBuilder result = new StringBuilder();
         
         result.append("<html><body>\n");
@@ -66,5 +72,24 @@ public abstract class TestBase {
         
         result.append("</body></html>\n");
         return result.toString();
+    }
+    
+    protected void insertProduct(Pair<String, Integer> product) throws SQLException {
+        insertProduct(Collections.singleton(product));
+    }
+    
+    protected void insertProduct(Collection<Pair<String, Integer>> products) throws SQLException {
+        final StringBuilder sql = new StringBuilder("INSERT INTO Product (name, price) VALUES ");
+        
+        products.forEach(product -> sql.append("(\"")
+                .append(product.getFirst())
+                .append(
+                        "\", ")
+                .append(product.getSecond())
+                .append("), "));
+        
+        sql.deleteCharAt(sql.length() - 2);
+        
+        execute(sql.toString());
     }
 }
