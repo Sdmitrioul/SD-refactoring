@@ -15,8 +15,10 @@ import java.sql.Statement;
  * @author akirakozov
  */
 public class Main {
+    public static final String DB_URL = "jdbc:sqlite:test.db";
+    
     public static void main(String[] args) throws Exception {
-        try (Connection c = DriverManager.getConnection("jdbc:sqlite:test.db")) {
+        try (Connection c = DriverManager.getConnection(DB_URL)) {
             String sql = "CREATE TABLE IF NOT EXISTS PRODUCT" +
                     "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
                     " NAME           TEXT    NOT NULL, " +
