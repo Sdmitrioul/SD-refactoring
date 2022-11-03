@@ -27,8 +27,14 @@ public class ProductDaoSQLite extends AbstractDao implements ProductDao {
     }
     
     @Override
-    public int getCount() {
-        return 0;
+    public int getCount() throws DaoException {
+        return execute("SELECT COUNT(*) FROM PRODUCT", resultSet -> {
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+            
+            return 0;
+        });
     }
     
     @Override
