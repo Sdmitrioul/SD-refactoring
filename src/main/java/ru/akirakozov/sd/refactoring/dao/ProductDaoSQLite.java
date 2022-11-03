@@ -3,10 +3,22 @@ package ru.akirakozov.sd.refactoring.dao;
 import ru.akirakozov.sd.refactoring.exception.DaoException;
 import ru.akirakozov.sd.refactoring.model.Product;
 
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoSQLite extends AbstractDao implements ProductDao {
+    private static FunctionWithException<ResultSet, Product, SQLException> getProductFromResultSet = resultSet -> {
+        if (resultSet.next()) {
+            String name = resultSet.getString("name");
+            int price = resultSet.getInt("price");
+            return Product.of(name, price);
+        }
+        
+        return null;
+    };
+    
     public ProductDaoSQLite(final String dbName) {
         super(dbName);
     }
@@ -50,20 +62,12 @@ public class ProductDaoSQLite extends AbstractDao implements ProductDao {
     
     @Override
     public Product getProductWithMinCost() throws DaoException {
-        return execute("SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1", resultSet -> {
-            if (resultSet.next()) {
-                String name = resultSet.getString("name");
-                int price = resultSet.getInt("price");
-                return Product.of(name, price);
-            }
-            
-            return null;
-        });
+        return execute("SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1", getProductFromResultSet);
     }
     
     @Override
-    public Product getProductWithMaxCost() {
-        return null;
+    public Product getProductWithMaxCost() throws DaoException {
+        return execute("SELECT * FROM PRODUCT ORDER BY PRICE DESC LIMIT 1", getProductFromResultSet);
     }
     
     @Override
