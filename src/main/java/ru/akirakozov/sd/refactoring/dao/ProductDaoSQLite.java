@@ -38,8 +38,14 @@ public class ProductDaoSQLite extends AbstractDao implements ProductDao {
     }
     
     @Override
-    public long getSumCost() {
-        return 0;
+    public long getSumCost() throws DaoException {
+        return execute("SELECT SUM(price) FROM PRODUCT", resultSet -> {
+            if (resultSet.next()) {
+                return resultSet.getLong(1);
+            }
+            
+            return 0L;
+        });
     }
     
     @Override
