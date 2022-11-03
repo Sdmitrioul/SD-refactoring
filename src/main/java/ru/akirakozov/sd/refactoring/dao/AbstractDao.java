@@ -7,7 +7,6 @@ import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-import java.util.function.Function;
 
 public abstract class AbstractDao {
     private final String dbName;
@@ -26,7 +25,8 @@ public abstract class AbstractDao {
         }
     }
     
-    protected <T> T execute(final String sql, final Function<ResultSet, T> function) throws DaoException {
+    protected <T> T execute(final String sql, final FunctionWithException<ResultSet, T, SQLException> function)
+            throws DaoException {
         try (final Connection connection = DriverManager.getConnection(dbName)) {
             try (final Statement statement = connection.createStatement()) {
                 try (final ResultSet resultSet = statement.executeQuery(sql)) {
@@ -36,5 +36,10 @@ public abstract class AbstractDao {
         } catch (SQLException e) {
             throw new DaoException("SQL exception in query: " + sql);
         }
+    }
+    
+    @FunctionalInterface
+    protected interface FunctionWithException<T, R, E extends Throwable> {
+        R apply(T t) throws E;
     }
 }
