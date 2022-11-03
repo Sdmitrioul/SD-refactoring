@@ -3,6 +3,7 @@ package ru.akirakozov.sd.refactoring.dao;
 import ru.akirakozov.sd.refactoring.exception.DaoException;
 import ru.akirakozov.sd.refactoring.model.Product;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoSQLite extends AbstractDao implements ProductDao {
@@ -11,8 +12,14 @@ public class ProductDaoSQLite extends AbstractDao implements ProductDao {
     }
     
     @Override
-    public List<Product> getAllProducts() {
-        return null;
+    public List<Product> getAllProducts() throws DaoException {
+        return execute("SELECT * FROM PRODUCT", resultSet -> {
+            final List<Product> products = new ArrayList<>();
+            
+            //TODO: add getting result
+            
+            return products;
+        });
     }
     
     @Override
