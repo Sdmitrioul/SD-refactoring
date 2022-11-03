@@ -49,8 +49,16 @@ public class ProductDaoSQLite extends AbstractDao implements ProductDao {
     }
     
     @Override
-    public Product getProductWithMinCost() {
-        return null;
+    public Product getProductWithMinCost() throws DaoException {
+        return execute("SELECT * FROM PRODUCT ORDER BY PRICE LIMIT 1", resultSet -> {
+            if (resultSet.next()) {
+                String name = resultSet.getString("name");
+                int price = resultSet.getInt("price");
+                return Product.of(name, price);
+            }
+            
+            return null;
+        });
     }
     
     @Override
