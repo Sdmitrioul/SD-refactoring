@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ProductDaoSQLite extends AbstractDao implements ProductDao {
-    private static FunctionWithException<ResultSet, Product, SQLException> getProductFromResultSet = resultSet -> {
+    private static final FunctionWithException<ResultSet, Product, SQLException> getProductFromResultSet = resultSet -> {
         if (resultSet.next()) {
             String name = resultSet.getString("name");
             int price = resultSet.getInt("price");
