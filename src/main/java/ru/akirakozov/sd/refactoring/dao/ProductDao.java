@@ -11,5 +11,5 @@ public interface ProductDao {
     long getSumCost() throws DaoException;
     Product getProductWithMinCost() throws DaoException;
     Product getProductWithMaxCost() throws DaoException;
-    void addProduct() throws DaoException;
+    void addProduct(Product product) throws DaoException;
 }

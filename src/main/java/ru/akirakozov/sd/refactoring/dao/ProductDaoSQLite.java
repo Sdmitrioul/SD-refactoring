@@ -35,7 +35,6 @@ public class ProductDaoSQLite extends AbstractDao implements ProductDao {
     }
     
     @Override
-    public void addProduct() {
-    
+    public void addProduct(Product product) {
     }
 }
