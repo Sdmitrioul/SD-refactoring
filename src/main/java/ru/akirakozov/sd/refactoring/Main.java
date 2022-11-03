@@ -22,7 +22,7 @@ public class Main {
         try {
             dao.createTableIfNotExist();
         } catch (DaoException e) {
-            System.err.println(e.getMessage());
+            System.err.println("Can't create product table: " + e.getMessage());
             return;
         }
         
