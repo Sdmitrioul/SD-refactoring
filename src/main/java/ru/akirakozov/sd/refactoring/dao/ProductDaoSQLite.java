@@ -16,7 +16,11 @@ public class ProductDaoSQLite extends AbstractDao implements ProductDao {
         return execute("SELECT * FROM PRODUCT", resultSet -> {
             final List<Product> products = new ArrayList<>();
             
-            //TODO: add getting result
+            while (resultSet.next()) {
+                String name = resultSet.getString("name");
+                int price = resultSet.getInt("price");
+                products.add(Product.of(name, price));
+            }
             
             return products;
         });

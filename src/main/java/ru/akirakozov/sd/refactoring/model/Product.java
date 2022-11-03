@@ -9,6 +9,10 @@ public final class Product {
         this.cost = cost;
     }
     
+    public static Product of(final String name, final int price) {
+        return new Product(name, price);
+    }
+    
     public String getName() {
         return name;
     }
