@@ -1,5 +1,6 @@
 package ru.akirakozov.sd.refactoring.dao;
 
+import ru.akirakozov.sd.refactoring.exception.DaoException;
 import ru.akirakozov.sd.refactoring.model.Product;
 
 import java.util.List;
@@ -35,6 +36,15 @@ public class ProductDaoSQLite extends AbstractDao implements ProductDao {
     }
     
     @Override
-    public void addProduct(Product product) {
+    public void addProduct(Product product) throws DaoException {
+        StringBuilder sql = new StringBuilder();
+        
+        sql.append("INSERT INTO PRODUCT (NAME, PRICE) VALUES (\"")
+                .append(product.getName())
+                .append("\", ")
+                .append(product.getCost())
+                .append(")");
+        
+        execute(sql.toString());
     }
 }
