@@ -15,18 +15,17 @@ import java.sql.Statement;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.when;
-import static ru.akirakozov.sd.refactoring.Main.DB_URL;
 
 public class AddProductServletTest extends TestBase {
     
     public AddProductServletTest() {
-        super(new AddProductServlet());
+        super(new AddProductServlet(DAO));
     }
     
     @Test
     public void addProductTest() throws ServletException, IOException, SQLException {
         final Pair<String, Integer> product = new Pair<>("iphone", 10000);
-    
+        
         when(request.getMethod()).thenReturn("GET");
         when(request.getParameter("name")).thenReturn(product.getFirst());
         when(request.getParameter("price")).thenReturn(String.valueOf(product.getSecond()));

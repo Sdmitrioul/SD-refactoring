@@ -4,6 +4,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import ru.akirakozov.sd.refactoring.dao.ProductDao;
+import ru.akirakozov.sd.refactoring.dao.ProductDaoSQLite;
 import ru.akirakozov.sd.refactoring.util.Pair;
 
 import javax.servlet.http.HttpServlet;
@@ -23,13 +25,10 @@ import java.util.List;
 import java.util.function.Consumer;
 
 import static org.mockito.Mockito.when;
-import static ru.akirakozov.sd.refactoring.Main.DB_URL;
 
 public abstract class TestBase {
-    private static final String PRODUCT_TABLE = "CREATE TABLE IF NOT EXISTS PRODUCT" +
-            "(ID INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
-            " NAME           TEXT    NOT NULL, " +
-            " PRICE          INT     NOT NULL)";
+    protected static final String DB_URL = "jdbc:sqlite:test.db";
+    protected static final ProductDao DAO = new ProductDaoSQLite(DB_URL);
     protected final StringWriter writer = new StringWriter();
     
     protected final HttpServlet servlet;
@@ -42,9 +41,44 @@ public abstract class TestBase {
         this.servlet = servlet;
     }
     
+    protected static String htmlResult(String value) {
+        return htmlResult(result -> result.append(value));
+    }
+    
+    private static String htmlResult(Consumer<StringBuilder> consumer) {
+        final StringBuilder result = new StringBuilder();
+        
+        result.append("<html><body>\n");
+        
+        consumer.accept(result);
+        
+        result.append("</body></html>\n");
+        return result.toString();
+    }
+    
+    protected static String htmlResult(Collection<Pair<String, Integer>> items) {
+        return htmlResult(result -> {
+            items.forEach(item -> result.append(item.getFirst())
+                    .append("\t")
+                    .append(item.getSecond())
+                    .append("</br>\n"));
+        });
+    }
+    
+    protected static List<Pair<String, Integer>> getProducts() {
+        final List<Pair<String, Integer>> products = new ArrayList<>(4);
+        
+        products.add(Pair.of("iphone", 100));
+        products.add(Pair.of("mac", 1000));
+        products.add(Pair.of("airpods", 10));
+        products.add(Pair.of("watch", 50));
+        
+        return products;
+    }
+    
     @Before
     public void before() throws SQLException, IOException {
-        execute(PRODUCT_TABLE);
+        DAO.createTableIfNotExist();
         execute("DELETE FROM PRODUCT");
         MockitoAnnotations.openMocks(this);
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
@@ -61,30 +95,6 @@ public abstract class TestBase {
     @After
     public void after() throws SQLException {
         execute("DELETE FROM PRODUCT");
-    }
-    
-    protected static String htmlResult(String value) {
-        return htmlResult(result -> result.append(value));
-    }
-    
-    protected static String htmlResult(Collection<Pair<String, Integer>> items) {
-        return htmlResult(result -> {
-            items.forEach(item -> result.append(item.getFirst())
-                    .append("\t")
-                    .append(item.getSecond())
-                    .append("</br>\n"));
-        });
-    }
-    
-    private static String htmlResult(Consumer<StringBuilder> consumer) {
-        final StringBuilder result = new StringBuilder();
-        
-        result.append("<html><body>\n");
-        
-        consumer.accept(result);
-        
-        result.append("</body></html>\n");
-        return result.toString();
     }
     
     protected void insertProduct(Pair<String, Integer> product) throws SQLException {
@@ -104,16 +114,5 @@ public abstract class TestBase {
         sql.deleteCharAt(sql.length() - 2);
         
         execute(sql.toString());
-    }
-    
-    protected static List<Pair<String, Integer>> getProducts() {
-        final List<Pair<String, Integer>> products = new ArrayList<>(4);
-        
-        products.add(Pair.of("iphone", 100));
-        products.add(Pair.of("mac", 1000));
-        products.add(Pair.of("airpods", 10));
-        products.add(Pair.of("watch", 50));
-        
-        return products;
     }
 }

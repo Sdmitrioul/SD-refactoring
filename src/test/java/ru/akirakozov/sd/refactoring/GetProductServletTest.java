@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 public class GetProductServletTest extends TestBase {
     public GetProductServletTest() {
-        super(new GetProductsServlet());
+        super(new GetProductsServlet(DAO));
     }
     
     @Test

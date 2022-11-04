@@ -15,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 public class QueryServletTest extends TestBase {
     public QueryServletTest() {
-        super(new QueryServlet());
+        super(new QueryServlet(DAO));
     }
     
     @Test

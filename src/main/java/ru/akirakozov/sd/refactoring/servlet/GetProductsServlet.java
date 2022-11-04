@@ -1,5 +1,7 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
+import ru.akirakozov.sd.refactoring.dao.ProductDao;
+
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -13,7 +15,12 @@ import java.sql.Statement;
  * @author akirakozov
  */
 public class GetProductsServlet extends HttpServlet {
-
+    private final ProductDao dao;
+    
+    public GetProductsServlet(final ProductDao dao) {
+        this.dao = dao;
+    }
+    
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         try {

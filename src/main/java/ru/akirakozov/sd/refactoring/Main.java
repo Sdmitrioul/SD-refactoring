@@ -10,11 +10,17 @@ import ru.akirakozov.sd.refactoring.servlet.AddProductServlet;
 import ru.akirakozov.sd.refactoring.servlet.GetProductsServlet;
 import ru.akirakozov.sd.refactoring.servlet.QueryServlet;
 
+import javax.servlet.http.HttpServlet;
+
 /**
  * @author akirakozov
  */
 public class Main {
-    public static final String DB_URL = "jdbc:sqlite:test.db";
+    private static final String DB_URL = "jdbc:sqlite:test.db";
+    
+    private static final String ADD_PRODUCT_PATH = "/add-product";
+    private static final String GET_PRODUCTS_PATH = "/get-products";
+    private static final String QUERY_PRODUCTS_PATH = "/query";
     
     public static void main(String[] args) throws Exception {
         final ProductDao dao = new ProductDaoSQLite(DB_URL);
@@ -32,11 +38,15 @@ public class Main {
         context.setContextPath("/");
         server.setHandler(context);
         
-        context.addServlet(new ServletHolder(new AddProductServlet()), "/add-product");
-        context.addServlet(new ServletHolder(new GetProductsServlet()), "/get-products");
-        context.addServlet(new ServletHolder(new QueryServlet()), "/query");
+        context.addServlet(servletOf(new AddProductServlet(dao)), ADD_PRODUCT_PATH);
+        context.addServlet(servletOf(new GetProductsServlet(dao)), GET_PRODUCTS_PATH);
+        context.addServlet(servletOf(new QueryServlet(dao)), QUERY_PRODUCTS_PATH);
         
         server.start();
         server.join();
+    }
+    
+    private static ServletHolder servletOf(final HttpServlet servlet) {
+        return new ServletHolder(servlet);
     }
 }
