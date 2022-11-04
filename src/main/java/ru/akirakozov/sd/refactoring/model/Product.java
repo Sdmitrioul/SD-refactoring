@@ -4,14 +4,14 @@ import java.util.Objects;
 
 public final class Product {
     private final String name;
-    private final int cost;
+    private final long cost;
     
-    public Product(final String name, final int cost) {
+    public Product(final String name, final long cost) {
         this.name = name;
         this.cost = cost;
     }
     
-    public static Product of(final String name, final int price) {
+    public static Product of(final String name, final long price) {
         return new Product(name, price);
     }
     
@@ -54,7 +54,7 @@ public final class Product {
         return name;
     }
     
-    public int getCost() {
+    public long getCost() {
         return cost;
     }
 }
