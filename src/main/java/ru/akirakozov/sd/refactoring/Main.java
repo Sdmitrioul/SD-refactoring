@@ -22,6 +22,8 @@ public class Main {
     private static final String GET_PRODUCTS_PATH = "/get-products";
     private static final String QUERY_PRODUCTS_PATH = "/query";
     
+    private static final int PORT = 8081;
+    
     public static void main(String[] args) throws Exception {
         final ProductDao dao = new ProductDaoSQLite(DB_URL);
         
@@ -32,7 +34,7 @@ public class Main {
             return;
         }
         
-        final Server server = new Server(8081);
+        final Server server = new Server(PORT);
         
         ServletContextHandler context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
