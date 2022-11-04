@@ -3,7 +3,6 @@ package ru.akirakozov.sd.refactoring.servlet;
 import ru.akirakozov.sd.refactoring.dao.ProductDao;
 import ru.akirakozov.sd.refactoring.model.Product;
 
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -11,11 +10,9 @@ import java.io.IOException;
 /**
  * @author akirakozov
  */
-public class AddProductServlet extends HttpServlet {
-    private final ProductDao dao;
-    
+public class AddProductServlet extends AbstractProductServlet {
     public AddProductServlet(final ProductDao dao) {
-        this.dao = dao;
+        super(dao);
     }
     
     @Override
