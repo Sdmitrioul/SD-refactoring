@@ -8,6 +8,7 @@ import ru.akirakozov.sd.refactoring.dao.ProductDao;
 import ru.akirakozov.sd.refactoring.dao.ProductDaoSQLite;
 import ru.akirakozov.sd.refactoring.exception.DaoException;
 import ru.akirakozov.sd.refactoring.model.Product;
+import ru.akirakozov.sd.refactoring.util.Html;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -38,22 +39,11 @@ public abstract class TestBase {
     }
     
     protected static String htmlResult(String value) {
-        return htmlResult(result -> result.append(value));
-    }
-    
-    private static String htmlResult(Consumer<StringBuilder> consumer) {
-        final StringBuilder result = new StringBuilder();
-        
-        result.append("<html><body>\n");
-        
-        consumer.accept(result);
-        
-        result.append("</body></html>\n");
-        return result.toString();
+        return Html.writeBody(result -> result.append(value));
     }
     
     protected static String htmlResult(Collection<Product> items) {
-        return htmlResult(result -> {
+        return Html.writeBody(result -> {
             items.forEach(item -> result.append(item.getName())
                     .append("\t")
                     .append(item.getCost())
