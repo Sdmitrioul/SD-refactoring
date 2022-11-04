@@ -3,6 +3,7 @@ package ru.akirakozov.sd.refactoring.servlet;
 import ru.akirakozov.sd.refactoring.dao.ProductDao;
 import ru.akirakozov.sd.refactoring.exception.DaoException;
 import ru.akirakozov.sd.refactoring.model.Product;
+import ru.akirakozov.sd.refactoring.util.Html;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -22,20 +23,19 @@ public class GetProductsServlet extends AbstractProductServlet {
         try {
             final List<Product> products = dao.getAllProducts();
             
-            response.getWriter()
-                    .println("<html><body>");
-            
-            products.forEach(product -> {
-                try {
-                    response.getWriter()
-                            .println(product.toString("", "\t", "</br>"));
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+            final String responseHTML = Html.writeBody(builder -> {
+                products.forEach(product ->
+                        builder
+                                .append(
+                                        product.toString("",
+                                                "\t",
+                                                "</br>"
+                                        ))
+                                .append("\n"));
             });
             
             response.getWriter()
-                    .println("</body></html>");
+                    .print(responseHTML);
         } catch (DaoException e) {
             throw new RuntimeException(e);
         }

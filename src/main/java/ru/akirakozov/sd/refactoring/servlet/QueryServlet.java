@@ -2,6 +2,7 @@ package ru.akirakozov.sd.refactoring.servlet;
 
 import ru.akirakozov.sd.refactoring.dao.ProductDao;
 import ru.akirakozov.sd.refactoring.model.Product;
+import ru.akirakozov.sd.refactoring.util.Html;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -20,58 +21,49 @@ public class QueryServlet extends AbstractProductServlet {
         String command = request.getParameter("command");
         
         if ("max".equals(command)) {
-            response.getWriter()
-                    .println("<html><body>");
-            response.getWriter()
-                    .println("<h1>Product with max price: </h1>");
-            
             final Product product = dao.getProductWithMaxCost();
+            final String responseHtml =
+                    Html.writeBody(builder -> builder
+                            .append("<h1>Product with max price: </h1>")
+                            .append("\n")
+                            .append(product.toString("", "\t", "</br>"))
+                            .append("\n"));
             
             response.getWriter()
-                    .println(product.toString("", "\t", "</br>"));
-            
-            response.getWriter()
-                    .println("</body></html>");
+                    .print(responseHtml);
         } else if ("min".equals(command)) {
-            response.getWriter()
-                    .println("<html><body>");
-            response.getWriter()
-                    .println("<h1>Product with min price: </h1>");
-            
             final Product product = dao.getProductWithMinCost();
+            final String responseHtml =
+                    Html.writeBody(builder -> builder
+                            .append("<h1>Product with min price: </h1>")
+                            .append("\n")
+                            .append(product.toString("", "\t", "</br>"))
+                            .append("\n"));
             
             response.getWriter()
-                    .println(product.toString("", "\t", "</br>"));
-            
-            response.getWriter()
-                    .println("</body></html>");
+                    .print(responseHtml);
         } else if ("sum".equals(command)) {
-            response.getWriter()
-                    .println("<html><body>");
-            response.getWriter()
-                    .println("Summary price: ");
-            
             final long sumCost = dao.getSumCost();
+            final String responseHtml =
+                    Html.writeBody(builder -> builder
+                            .append("Summary price: ")
+                            .append("\n")
+                            .append(sumCost)
+                            .append("\n"));
             
             response.getWriter()
-                    .println(sumCost);
-            
-            response.getWriter()
-                    .println("</body></html>");
+                    .print(responseHtml);
         } else if ("count".equals(command)) {
-            
-            response.getWriter()
-                    .println("<html><body>");
-            response.getWriter()
-                    .println("Number of products: ");
-            
             final long count = dao.getCount();
+            final String responseHtml =
+                    Html.writeBody(builder -> builder
+                            .append("Number of products: ")
+                            .append("\n")
+                            .append(count)
+                            .append("\n"));
             
             response.getWriter()
-                    .println(count);
-            
-            response.getWriter()
-                    .println("</body></html>");
+                    .print(responseHtml);
         } else {
             response.getWriter()
                     .println("Unknown command: " + command);
@@ -80,5 +72,4 @@ public class QueryServlet extends AbstractProductServlet {
         response.setContentType("text/html");
         response.setStatus(HttpServletResponse.SC_OK);
     }
-    
 }
