@@ -1,7 +1,9 @@
 package ru.akirakozov.sd.refactoring.servlet;
 
 import ru.akirakozov.sd.refactoring.dao.ProductDao;
-import ru.akirakozov.sd.refactoring.model.Product;
+import ru.akirakozov.sd.refactoring.exception.DaoException;
+import ru.akirakozov.sd.refactoring.handler.HandlerException;
+import ru.akirakozov.sd.refactoring.handler.QueryProductHandler;
 import ru.akirakozov.sd.refactoring.util.Html;
 
 import javax.servlet.http.HttpServletRequest;
@@ -20,51 +22,20 @@ public class QueryServlet extends AbstractProductServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String command = request.getParameter("command");
         
-        if ("max".equals(command)) {
-            final Product product = dao.getProductWithMaxCost();
-            final String responseHtml =
-                    Html.writeBody(builder -> builder
-                            .append("<h1>Product with max price: </h1>")
-                            .append("\n")
-                            .append(product.toString("", "\t", "</br>"))
-                            .append("\n"));
+        try {
+            QueryProductHandler handler = QueryProductHandler.getCommand(command);
+            
+            final String responseHtml = Html.writeBody(builder -> {
+                try {
+                    handler.consume(dao, builder);
+                } catch (DaoException e) {
+                    throw new RuntimeException(e);
+                }
+            });
             
             response.getWriter()
                     .print(responseHtml);
-        } else if ("min".equals(command)) {
-            final Product product = dao.getProductWithMinCost();
-            final String responseHtml =
-                    Html.writeBody(builder -> builder
-                            .append("<h1>Product with min price: </h1>")
-                            .append("\n")
-                            .append(product.toString("", "\t", "</br>"))
-                            .append("\n"));
-            
-            response.getWriter()
-                    .print(responseHtml);
-        } else if ("sum".equals(command)) {
-            final long sumCost = dao.getSumCost();
-            final String responseHtml =
-                    Html.writeBody(builder -> builder
-                            .append("Summary price: ")
-                            .append("\n")
-                            .append(sumCost)
-                            .append("\n"));
-            
-            response.getWriter()
-                    .print(responseHtml);
-        } else if ("count".equals(command)) {
-            final long count = dao.getCount();
-            final String responseHtml =
-                    Html.writeBody(builder -> builder
-                            .append("Number of products: ")
-                            .append("\n")
-                            .append(count)
-                            .append("\n"));
-            
-            response.getWriter()
-                    .print(responseHtml);
-        } else {
+        } catch (HandlerException e) {
             response.getWriter()
                     .println("Unknown command: " + command);
         }
