@@ -2,12 +2,11 @@ package ru.akirakozov.sd.refactoring;
 
 import org.junit.Test;
 import ru.akirakozov.sd.refactoring.base.TestBase;
+import ru.akirakozov.sd.refactoring.model.Product;
 import ru.akirakozov.sd.refactoring.servlet.QueryServlet;
-import ru.akirakozov.sd.refactoring.util.Pair;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.sql.SQLException;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -19,10 +18,10 @@ public class QueryServletTest extends TestBase {
     }
     
     @Test
-    public void testMinProduct() throws SQLException, ServletException, IOException {
-        final List<Pair<String, Integer>> products = getProducts();
+    public void testMinProduct() throws ServletException, IOException {
+        final List<Product> products = getProducts();
         
-        insertProduct(products);
+        DAO.addProduct(products);
         
         when(request.getParameter("command")).thenReturn("min");
         when(request.getMethod()).thenReturn("GET");
@@ -33,10 +32,10 @@ public class QueryServletTest extends TestBase {
     }
     
     @Test
-    public void testMaxProduct() throws SQLException, ServletException, IOException {
-        final List<Pair<String, Integer>> products = getProducts();
+    public void testMaxProduct() throws ServletException, IOException {
+        final List<Product> products = getProducts();
         
-        insertProduct(products);
+        DAO.addProduct(products);
         
         when(request.getParameter("command")).thenReturn("max");
         when(request.getMethod()).thenReturn("GET");
@@ -47,10 +46,10 @@ public class QueryServletTest extends TestBase {
     }
     
     @Test
-    public void testSumProduct() throws SQLException, ServletException, IOException {
-        final List<Pair<String, Integer>> products = getProducts();
+    public void testSumProduct() throws ServletException, IOException {
+        final List<Product> products = getProducts();
         
-        insertProduct(products);
+        DAO.addProduct(products);
         
         when(request.getParameter("command")).thenReturn("sum");
         when(request.getMethod()).thenReturn("GET");
@@ -61,10 +60,10 @@ public class QueryServletTest extends TestBase {
     }
     
     @Test
-    public void testCountProduct() throws SQLException, ServletException, IOException {
-        final List<Pair<String, Integer>> products = getProducts();
+    public void testCountProduct() throws ServletException, IOException {
+        final List<Product> products = getProducts();
         
-        insertProduct(products);
+        DAO.addProduct(products);
         
         when(request.getParameter("command")).thenReturn("count");
         when(request.getMethod()).thenReturn("GET");

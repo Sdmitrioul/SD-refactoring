@@ -1,5 +1,7 @@
 package ru.akirakozov.sd.refactoring.model;
 
+import java.util.Objects;
+
 public final class Product {
     private final String name;
     private final int cost;
@@ -13,12 +15,22 @@ public final class Product {
         return new Product(name, price);
     }
     
-    public String getName() {
-        return name;
+    @Override
+    public int hashCode() {
+        return Objects.hash(name, cost);
     }
     
-    public int getCost() {
-        return cost;
+    @Override
+    public boolean equals(final Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        
+        final Product product = (Product) o;
+        return cost == product.cost && name.equals(product.name);
     }
     
     @Override
@@ -32,8 +44,17 @@ public final class Product {
         result.append(prepend)
                 .append(name)
                 .append(delimiter)
+                .append(cost)
                 .append(append);
         
         return result.toString();
+    }
+    
+    public String getName() {
+        return name;
+    }
+    
+    public int getCost() {
+        return cost;
     }
 }

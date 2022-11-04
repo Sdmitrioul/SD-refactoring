@@ -2,8 +2,8 @@ package ru.akirakozov.sd.refactoring;
 
 import org.junit.Test;
 import ru.akirakozov.sd.refactoring.base.TestBase;
+import ru.akirakozov.sd.refactoring.model.Product;
 import ru.akirakozov.sd.refactoring.servlet.GetProductsServlet;
-import ru.akirakozov.sd.refactoring.util.Pair;
 
 import javax.servlet.ServletException;
 import java.io.IOException;
@@ -20,9 +20,9 @@ public class GetProductServletTest extends TestBase {
     
     @Test
     public void testGetMethod() throws ServletException, IOException, SQLException {
-        final List<Pair<String, Integer>> products = getProducts();
+        final List<Product> products = getProducts();
         
-        insertProduct(products);
+        DAO.addProduct(products);
         
         when(request.getMethod()).thenReturn("GET");
         

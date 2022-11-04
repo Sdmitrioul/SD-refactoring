@@ -15,7 +15,7 @@ public abstract class AbstractDao {
         this.dbName = dbName;
     }
     
-    public int execute(final String sql) throws DaoException {
+    protected int execute(final String sql) throws DaoException {
         try (final Connection connection = DriverManager.getConnection(dbName)) {
             try (final Statement statement = connection.createStatement()) {
                 return statement.executeUpdate(sql);

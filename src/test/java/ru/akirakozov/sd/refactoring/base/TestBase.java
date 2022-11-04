@@ -6,7 +6,8 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import ru.akirakozov.sd.refactoring.dao.ProductDao;
 import ru.akirakozov.sd.refactoring.dao.ProductDaoSQLite;
-import ru.akirakozov.sd.refactoring.util.Pair;
+import ru.akirakozov.sd.refactoring.exception.DaoException;
+import ru.akirakozov.sd.refactoring.model.Product;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
@@ -14,20 +15,15 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
 import static org.mockito.Mockito.when;
 
 public abstract class TestBase {
-    protected static final String DB_URL = "jdbc:sqlite:test.db";
+    protected static final String DB_URL = "test.db";
     protected static final ProductDao DAO = new ProductDaoSQLite(DB_URL);
     protected final StringWriter writer = new StringWriter();
     
@@ -56,63 +52,36 @@ public abstract class TestBase {
         return result.toString();
     }
     
-    protected static String htmlResult(Collection<Pair<String, Integer>> items) {
+    protected static String htmlResult(Collection<Product> items) {
         return htmlResult(result -> {
-            items.forEach(item -> result.append(item.getFirst())
+            items.forEach(item -> result.append(item.getName())
                     .append("\t")
-                    .append(item.getSecond())
+                    .append(item.getCost())
                     .append("</br>\n"));
         });
     }
     
-    protected static List<Pair<String, Integer>> getProducts() {
-        final List<Pair<String, Integer>> products = new ArrayList<>(4);
+    protected static List<Product> getProducts() {
+        final List<Product> products = new ArrayList<>(4);
         
-        products.add(Pair.of("iphone", 100));
-        products.add(Pair.of("mac", 1000));
-        products.add(Pair.of("airpods", 10));
-        products.add(Pair.of("watch", 50));
+        products.add(Product.of("iphone", 100));
+        products.add(Product.of("mac", 1000));
+        products.add(Product.of("airpods", 10));
+        products.add(Product.of("watch", 50));
         
         return products;
     }
     
     @Before
-    public void before() throws SQLException, IOException {
+    public void before() throws IOException {
         DAO.createTableIfNotExist();
-        execute("DELETE FROM PRODUCT");
+        DAO.executeStatement("DELETE FROM PRODUCT");
         MockitoAnnotations.openMocks(this);
         when(response.getWriter()).thenReturn(new PrintWriter(writer));
     }
     
-    protected int execute(String sql) throws SQLException {
-        try (Connection connection = DriverManager.getConnection(DB_URL)) {
-            try (Statement statement = connection.createStatement()) {
-                return statement.executeUpdate(sql);
-            }
-        }
-    }
-    
     @After
-    public void after() throws SQLException {
-        execute("DELETE FROM PRODUCT");
-    }
-    
-    protected void insertProduct(Pair<String, Integer> product) throws SQLException {
-        insertProduct(Collections.singleton(product));
-    }
-    
-    protected void insertProduct(Collection<Pair<String, Integer>> products) throws SQLException {
-        final StringBuilder sql = new StringBuilder("INSERT INTO Product (name, price) VALUES ");
-        
-        products.forEach(product -> sql.append("(\"")
-                .append(product.getFirst())
-                .append(
-                        "\", ")
-                .append(product.getSecond())
-                .append("), "));
-        
-        sql.deleteCharAt(sql.length() - 2);
-        
-        execute(sql.toString());
+    public void after() throws DaoException {
+        DAO.executeStatement("DELETE FROM PRODUCT");
     }
 }

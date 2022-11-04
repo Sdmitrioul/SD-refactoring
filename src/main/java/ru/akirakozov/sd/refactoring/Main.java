@@ -16,7 +16,7 @@ import javax.servlet.http.HttpServlet;
  * @author akirakozov
  */
 public class Main {
-    private static final String DB_URL = "jdbc:sqlite:test.db";
+    private static final String DB_URL = "product.db";
     
     private static final String ADD_PRODUCT_PATH = "/add-product";
     private static final String GET_PRODUCTS_PATH = "/get-products";

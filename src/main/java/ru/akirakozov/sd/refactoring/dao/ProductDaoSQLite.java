@@ -6,6 +6,8 @@ import ru.akirakozov.sd.refactoring.model.Product;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 public class ProductDaoSQLite extends AbstractDao implements ProductDao {
@@ -19,8 +21,10 @@ public class ProductDaoSQLite extends AbstractDao implements ProductDao {
         return null;
     };
     
+    private static final String SQLITE_PREFIX = "jdbc:sqlite:";
+    
     public ProductDaoSQLite(final String dbName) {
-        super(dbName);
+        super(SQLITE_PREFIX + dbName);
     }
     
     @Override
@@ -50,6 +54,11 @@ public class ProductDaoSQLite extends AbstractDao implements ProductDao {
     }
     
     @Override
+    public int executeStatement(final String sql) throws DaoException {
+        return execute(sql);
+    }
+    
+    @Override
     public long getSumCost() throws DaoException {
         return execute("SELECT SUM(price) FROM PRODUCT", resultSet -> {
             if (resultSet.next()) {
@@ -72,13 +81,18 @@ public class ProductDaoSQLite extends AbstractDao implements ProductDao {
     
     @Override
     public void addProduct(Product product) throws DaoException {
+        addProduct(Collections.singleton(product));
+    }
+    
+    @Override
+    public void addProduct(final Collection<Product> products) throws DaoException {
         StringBuilder sql = new StringBuilder();
         
-        sql.append("INSERT INTO PRODUCT (NAME, PRICE) VALUES (\"")
-                .append(product.getName())
-                .append("\", ")
-                .append(product.getCost())
-                .append(")");
+        sql.append("INSERT INTO PRODUCT (NAME, PRICE) VALUES ");
+        
+        products.forEach(product -> sql.append(product.toString("(\"", "\", ", "), ")));
+        
+        sql.deleteCharAt(sql.length() - 2);
         
         execute(sql.toString());
     }
